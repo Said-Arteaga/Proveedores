@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="proveedores.css">
+    <title>Proveedores</title>
+</head>
+<body>
+    <div id="portada">
+        <div class="header">
+            <div>
+                <div id="icono">
+                    <img id="icono_proveedor" src="/assets/imagenes/proveedor.png">
+                </div>
+            </div>
+             <h1>PROVEEDORES - CREA - ACTULIZA - BUSCA - ELIMINA</h1>
+        </div>
+    </div>
+    <div class="campos">
+        <form id="form-proveedor" action="/api/proveedores" method="POST">
+            <label for="nombre">Nombre del Proveedor:</label>
+            <input type="text" id="nombre" name="nombre" maxlength="120" autocomplete="organization" required>
+            <br>
+            <label for="contacto">Contacto:</label>
+            <input type="text" id="contacto" name="contacto" maxlength="120">
+            <br>
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" maxlength="255" autocomplete="street-address">
+            <br>
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" maxlength="20" autocomplete="tel">
+            <br>
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" name="correo" maxlength="150" autocomplete="email">
+            <br>
+            <label for="latitud">Latitud:</label>
+            <input type="number" id="latitud" name="latitud" min="-90" max="90" step="any">
+            <br>
+            <label for="longitud">Longitud:</label>
+            <input type="number" id="longitud" name="longitud" min="-180" max="180" step="any">
+            <br>
+            <label for="ciudad">Ciudad:</label>
+            <select id="ciudad" name="ciudad">
+                <option value="">Selecciona una ciudad</option>
+                <option value="México">México</option>
+                <option value="U.S.A.">U.S.A.</option>
+                <option value="Canadá">Canadá</option>
+                <option value="Perú">Perú</option>
+            </select>
+            <br>
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado">
+                <option value="">Selecciona un estado</option>
+                <option value="Hidalgo">Hidalgo</option>
+                <option value="CDMX">CDMX</option>
+                <option value="Tamaulipas">Tamaulipas</option>
+                <option value="Tlaxcala">Tlaxcala</option>
+            </select>
+
+            <button type="submit">Agregar
+                <img id="avanzar" src="/Proveedores/frontend/src_/assets/imagenes/avanzar.png">
+            </button>
+            <p id="mensaje-formulario" role="status" aria-live="polite"></p>
+        </form>
+    </div>
+    <script src="proveedores.js"></script>
+</body>
+</html>
