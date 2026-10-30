@@ -95,7 +95,7 @@ input:hover{
 }
 
 button:hover{
-     transform: translateY(-3px);
+    transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(106, 27, 154, 0.4);
 }
 
