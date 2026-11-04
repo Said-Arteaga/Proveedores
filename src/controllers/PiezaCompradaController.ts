@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../config/data-source";
 import { PiezaComprada } from "../entities/PiezaComprada";
 
+import { enteroPositivo, importe, responderError } from "../utils/validacion";
+
 const repositorio = () => AppDataSource.getRepository(PiezaComprada);
 
 export async function obtenerPiezasCompradas(_req: Request, res: Response) {
@@ -11,20 +13,15 @@ export async function obtenerPiezasCompradas(_req: Request, res: Response) {
             relations: { compra: true, pieza: true }
         }));
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ mensaje: "Error al consultar piezas compradas" });
+        responderError(error, res, "Error al consultar piezas compradas");
     }
 }
 
 export async function obtenerPiezaComprada(req: Request, res: Response) {
     try {
-        const idCompra = Number(req.params.idCompra);
-        const idPieza = Number(req.params.idPieza);
+        const idCompra = enteroPositivo(req.params.idCompra, "idCompra");
+        const idPieza = enteroPositivo(req.params.idPieza, "idPieza");
 
-        if (![idCompra, idPieza].every(id => Number.isInteger(id) && id > 0)) {
-            res.status(400).json({ mensaje: "Los identificadores no son válidos" });
-            return;
-        }
 
         const registro = await repositorio().findOne({
             where: { idCompra, idPieza },
@@ -38,52 +35,31 @@ export async function obtenerPiezaComprada(req: Request, res: Response) {
 
         res.json(registro);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ mensaje: "Error al consultar pieza comprada" });
+        responderError(error, res, "Error al consultar pieza comprada");
     }
 }
 
 export async function crearPiezaComprada(req: Request, res: Response) {
     try {
-        const idCompra = Number(req.body.idCompra);
-        const idPieza = Number(req.body.idPieza);
-        const cantidad = Number(req.body.cantidad);
-        const subTotal = Number(req.body.subTotal);
-
-        if (![idCompra, idPieza].every(id => Number.isInteger(id) && id > 0) ||
-            !Number.isInteger(cantidad) || cantidad <= 0 ||
-            !Number.isFinite(subTotal) || subTotal < 0) {
-            res.status(400).json({
-                mensaje: "Revisa los IDs, la cantidad (mayor que cero) y el subtotal"
-            });
-            return;
-        }
-
+        const datos = req.body ?? {};
         const registro = repositorio().create({
-            idCompra,
-            idPieza,
-            cantidad,
-            subTotal: subTotal.toFixed(2)
+            idCompra: enteroPositivo(datos.idCompra, "idCompra"),
+            idPieza: enteroPositivo(datos.idPieza, "idPieza"),
+            cantidad: enteroPositivo(datos.cantidad, "La cantidad"),
+            subTotal: importe(datos.subTotal, "El subtotal")
         });
-
-        res.status(201).json(await repositorio().save(registro));
+        await repositorio().insert(registro);
+        res.status(201).json(registro);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            mensaje: "No se pudo registrar la pieza. Verifica que existan la compra y la pieza."
-        });
+        responderError(error, res, "No se pudo registrar la pieza. Verifica que existan la compra y la pieza.");
     }
 }
 
 export async function actualizarPiezaComprada(req: Request, res: Response) {
     try {
-        const idCompra = Number(req.params.idCompra);
-        const idPieza = Number(req.params.idPieza);
+        const idCompra = enteroPositivo(req.params.idCompra, "idCompra");
+        const idPieza = enteroPositivo(req.params.idPieza, "idPieza");
 
-        if (![idCompra, idPieza].every(id => Number.isInteger(id) && id > 0)) {
-            res.status(400).json({ mensaje: "Los identificadores no son válidos" });
-            return;
-        }
 
         const repo = repositorio();
         const registro = await repo.findOneBy({ idCompra, idPieza });
@@ -93,40 +69,21 @@ export async function actualizarPiezaComprada(req: Request, res: Response) {
             return;
         }
 
-        if (req.body.cantidad !== undefined) {
-            const cantidad = Number(req.body.cantidad);
-            if (!Number.isInteger(cantidad) || cantidad <= 0) {
-                res.status(400).json({ mensaje: "La cantidad debe ser un entero mayor que cero" });
-                return;
-            }
-            registro.cantidad = cantidad;
-        }
-
-        if (req.body.subTotal !== undefined) {
-            const subTotal = Number(req.body.subTotal);
-            if (!Number.isFinite(subTotal) || subTotal < 0) {
-                res.status(400).json({ mensaje: "El subtotal debe ser igual o mayor que cero" });
-                return;
-            }
-            registro.subTotal = subTotal.toFixed(2);
-        }
+        const datos = req.body ?? {};
+        if (datos.cantidad !== undefined) registro.cantidad = enteroPositivo(datos.cantidad, "La cantidad");
+        if (datos.subTotal !== undefined) registro.subTotal = importe(datos.subTotal, "El subtotal");
 
         res.json(await repo.save(registro));
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ mensaje: "Error al actualizar pieza comprada" });
+        responderError(error, res, "Error al actualizar pieza comprada");
     }
 }
 
 export async function eliminarPiezaComprada(req: Request, res: Response) {
     try {
-        const idCompra = Number(req.params.idCompra);
-        const idPieza = Number(req.params.idPieza);
+        const idCompra = enteroPositivo(req.params.idCompra, "idCompra");
+        const idPieza = enteroPositivo(req.params.idPieza, "idPieza");
 
-        if (![idCompra, idPieza].every(id => Number.isInteger(id) && id > 0)) {
-            res.status(400).json({ mensaje: "Los identificadores no son válidos" });
-            return;
-        }
 
         const repo = repositorio();
         const registro = await repo.findOneBy({ idCompra, idPieza });
@@ -139,7 +96,6 @@ export async function eliminarPiezaComprada(req: Request, res: Response) {
         await repo.remove(registro);
         res.json({ mensaje: "Pieza comprada eliminada correctamente" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ mensaje: "Error al eliminar pieza comprada" });
+        responderError(error, res, "Error al eliminar pieza comprada");
     }
 }

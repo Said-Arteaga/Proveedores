@@ -9,7 +9,7 @@ import {
 import { Compra } from "./Compra";
 import { ProveedorPieza } from "./ProveedorPieza";
 
-@Entity({ name: "Proveedor" })
+@Entity({ name: "proveedor" })
 export class Proveedor {
     @PrimaryGeneratedColumn({ name: "IdProveedor" })
     idProveedor!: number;

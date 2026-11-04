@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="proveedores.css">
+    <title>Proveedor - Pieza | Sistema de Proveedores</title>
+</head>
+<body>
+    <header id="portada">
+        <div class="header">
+            <div id="icono"><img id="icono_proveedor" src="/assets/imagenes/envio.png" alt=""></div>
+            <div><h1>PROVEEDOR - PIEZA</h1><p>CREA · ACTUALIZA · BUSCA · ELIMINA</p></div>
+        </div>
+    </header>
+    <nav class="navegacion" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="proveedores.html">Proveedores</a>
+        <a href="proveedor-pieza.html" aria-current="page">Proveedor - Pieza</a>
+        <a href="pieza-comprada.html">Pieza Comprada</a>
+    </nav>
+    <main class="contenido">
+        <section class="campos" aria-labelledby="titulo-formulario">
+            <h2 id="titulo-formulario">Agregar relación</h2>
+            <p class="ayuda">Los campos con * son obligatorios.</p>
+            <form id="form-relacion" class="crud-form" action="/api/proveedor-pieza" method="POST">
+                <fieldset>
+                    <legend class="solo-lectores">Datos de relación</legend>
+                <div class="campo"><label for="idProveedor">Proveedor *</label><select id="idProveedor" name="idProveedor" required><option value="">Cargando opciones…</option></select></div>
+                <div class="campo"><label for="idPieza">Pieza *</label><select id="idPieza" name="idPieza" required><option value="">Cargando opciones…</option></select></div>
+                <div class="campo"><label for="precio">Precio *</label><input type="number" id="precio" name="precio" min="0" max="9999999999.99" step="0.01" required></div>
+                <div class="campo"><label for="fecha">Fecha *</label><input type="date" id="fecha" name="fecha" min="1000-01-01" max="9999-12-31" required></div>
+                </fieldset>
+                <p id="catalogo-mensaje" class="aviso" role="status" aria-live="polite"></p>
+                <div class="acciones-formulario">
+                    <button id="guardar" type="submit" disabled><span id="guardar-texto">Agregar</span> <img id="avanzar" src="/assets/imagenes/avanzar.png" alt=""></button>
+                    <button id="cancelar" class="secundario" type="button" hidden>Cancelar edición</button>
+                </div>
+                <p id="mensaje-formulario" class="aviso" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section class="registros" aria-labelledby="titulo-registros">
+            <div class="cabecera-lista"><h2 id="titulo-registros">Registros</h2><button id="recargar" class="secundario" type="button">Actualizar lista</button></div>
+            <label for="buscar">Buscar</label>
+            <input id="buscar" type="search" placeholder="Proveedor, pieza o fecha" autocomplete="off" aria-controls="lista-registros">
+            <p id="contador" class="ayuda" role="status" aria-live="polite"></p>
+            <p id="estado-lista" class="aviso" role="status" aria-live="polite">Cargando registros…</p>
+            <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla de registros">
+                <table>
+                    <caption class="solo-lectores">Listado de proveedor - pieza</caption>
+                    <thead><tr><th scope="col">Proveedor</th><th scope="col">Pieza</th><th scope="col">Precio</th><th scope="col">Fecha</th><th scope="col">Acciones</th></tr></thead>
+                    <tbody id="lista-registros"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <noscript><p class="aviso error">Activa JavaScript para consultar y guardar registros.</p></noscript>
+    <script type="module" src="proveedor-pieza.js"></script>
+</body>
+</html>

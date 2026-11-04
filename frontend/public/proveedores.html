@@ -4,66 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="proveedores.css">
-    <title>Proveedores</title>
+    <title>Proveedores | Sistema de Proveedores</title>
 </head>
 <body>
-    <div id="portada">
+    <header id="portada">
         <div class="header">
-            <div>
-                <div id="icono">
-                    <img id="icono_proveedor" src="/assets/imagenes/proveedor.png">
-                </div>
-            </div>
-            <h1>PROVEEDORES - CREA - ACTULIZA - BUSCA - ELIMINA</h1>
+            <div id="icono"><img id="icono_proveedor" src="/assets/imagenes/proveedor.png" alt=""></div>
+            <div><h1>PROVEEDORES</h1><p>CREA · ACTUALIZA · BUSCA · ELIMINA</p></div>
         </div>
-    </div>
-    <div class="campos">
-        <form id="form-proveedor" action="/api/proveedores" method="POST">
-            <label for="nombre">Nombre del Proveedor:</label>
-            <input type="text" id="nombre" name="nombre" maxlength="120" autocomplete="organization" required>
-            <br>
-            <label for="contacto">Contacto:</label>
-            <input type="text" id="contacto" name="contacto" maxlength="120">
-            <br>
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" maxlength="255" autocomplete="street-address">
-            <br>
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" maxlength="20" autocomplete="tel">
-            <br>
-            <label for="correo">Correo:</label>
-            <input type="email" id="correo" name="correo" maxlength="150" autocomplete="email">
-            <br>
-            <label for="latitud">Latitud:</label>
-            <input type="number" id="latitud" name="latitud" min="-90" max="90" step="any">
-            <br>
-            <label for="longitud">Longitud:</label>
-            <input type="number" id="longitud" name="longitud" min="-180" max="180" step="any">
-            <br>
-            <label for="ciudad">Ciudad:</label>
-            <select id="ciudad" name="ciudad">
-                <option value="">Selecciona una ciudad</option>
-                <option value="México">México</option>
-                <option value="U.S.A.">U.S.A.</option>
-                <option value="Canadá">Canadá</option>
-                <option value="Perú">Perú</option>
-            </select>
-            <br>
-            <label for="estado">Estado:</label>
-            <select id="estado" name="estado">
-                <option value="">Selecciona un estado</option>
-                <option value="Hidalgo">Hidalgo</option>
-                <option value="CDMX">CDMX</option>
-                <option value="Tamaulipas">Tamaulipas</option>
-                <option value="Tlaxcala">Tlaxcala</option>
-            </select>
-
-            <button type="submit">Agregar
-                <img id="avanzar" src="/assets/imagenes/avanzar.png">
-            </button>
-            <p id="mensaje-formulario" role="status" aria-live="polite"></p>
-        </form>
-    </div>
-    <script src="proveedores.js"></script>
+    </header>
+    <nav class="navegacion" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="proveedores.html" aria-current="page">Proveedores</a>
+        <a href="proveedor-pieza.html">Proveedor - Pieza</a>
+        <a href="pieza-comprada.html">Pieza Comprada</a>
+    </nav>
+    <main class="contenido">
+        <section class="campos" aria-labelledby="titulo-formulario">
+            <h2 id="titulo-formulario">Agregar proveedor</h2>
+            <p class="ayuda">Los campos con * son obligatorios.</p>
+            <form id="form-proveedor" class="crud-form" action="/api/proveedores" method="POST">
+                <fieldset>
+                    <legend class="solo-lectores">Datos de proveedor</legend>
+                <div class="campo"><label for="nombre">Nombre del proveedor *</label><input type="text" id="nombre" name="nombre" maxlength="120" autocomplete="organization" required></div>
+                <div class="campo"><label for="contacto">Contacto</label><input type="text" id="contacto" name="contacto" maxlength="120" autocomplete="name"></div>
+                <div class="campo"><label for="direccion">Dirección</label><input type="text" id="direccion" name="direccion" maxlength="255" autocomplete="street-address"></div>
+                <div class="campo"><label for="telefono">Teléfono</label><input type="tel" id="telefono" name="telefono" maxlength="20" autocomplete="tel"></div>
+                <div class="campo"><label for="correo">Correo</label><input type="email" id="correo" name="correo" maxlength="150" autocomplete="email"></div>
+                <div class="campo"><label for="latitud">Latitud</label><input type="number" id="latitud" name="latitud" min="-90" max="90" step="any"></div>
+                <div class="campo"><label for="longitud">Longitud</label><input type="number" id="longitud" name="longitud" min="-180" max="180" step="any"></div>
+                <div class="campo"><label for="ciudad">Ciudad</label><input type="text" id="ciudad" name="ciudad" maxlength="100" autocomplete="address-level2" list="ciudades"></div>
+                <div class="campo"><label for="estado">Estado</label><input type="text" id="estado" name="estado" maxlength="100" autocomplete="address-level1" list="estados"></div>
+                <datalist id="ciudades"><option value="México"><option value="Pachuca"></datalist>
+                <datalist id="estados"><option value="Hidalgo"><option value="CDMX"><option value="Tamaulipas"><option value="Tlaxcala"></datalist>
+                </fieldset>
+                <p id="catalogo-mensaje" class="aviso" role="status" aria-live="polite"></p>
+                <div class="acciones-formulario">
+                    <button id="guardar" type="submit" disabled><span id="guardar-texto">Agregar</span> <img id="avanzar" src="/assets/imagenes/avanzar.png" alt=""></button>
+                    <button id="cancelar" class="secundario" type="button" hidden>Cancelar edición</button>
+                </div>
+                <p id="mensaje-formulario" class="aviso" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section class="registros" aria-labelledby="titulo-registros">
+            <div class="cabecera-lista"><h2 id="titulo-registros">Registros</h2><button id="recargar" class="secundario" type="button">Actualizar lista</button></div>
+            <label for="buscar">Buscar</label>
+            <input id="buscar" type="search" placeholder="Nombre, contacto, correo o ubicación" autocomplete="off" aria-controls="lista-registros">
+            <p id="contador" class="ayuda" role="status" aria-live="polite"></p>
+            <p id="estado-lista" class="aviso" role="status" aria-live="polite">Cargando registros…</p>
+            <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla de registros">
+                <table class="tabla-proveedores">
+                    <caption class="solo-lectores">Listado de proveedores</caption>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Nombre</th><th scope="col">Contacto</th><th scope="col">Teléfono</th><th scope="col">Correo</th><th scope="col">Ubicación</th><th scope="col">Acciones</th></tr></thead>
+                    <tbody id="lista-registros"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <noscript><p class="aviso error">Activa JavaScript para consultar y guardar registros.</p></noscript>
+    <script type="module" src="proveedores.js"></script>
 </body>
 </html>

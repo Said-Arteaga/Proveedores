@@ -11,7 +11,7 @@ import {
 import { Proveedor } from "./Proveedor";
 import { PiezaComprada } from "./PiezaComprada";
 
-@Entity({ name: "Compras" })
+@Entity({ name: "compras" })
 export class Compra {
     @PrimaryGeneratedColumn({ name: "IdCompra" })
     idCompra!: number;
