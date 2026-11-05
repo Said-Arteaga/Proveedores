@@ -30,11 +30,12 @@ async function request(path, method = 'GET', body) {
     return { status: response.status, body: await response.json() };
 }
 
-test('sirve las tres pantallas y sus recursos sin reemplazar la raíz API', async () => {
+test('sirve las cinco pantallas y sus recursos sin reemplazar la raíz API', async () => {
     assert.equal((await request('/')).body.mensaje, 'Backend de Proveedores funcionando');
-    for (const path of ['/frontend/', '/frontend/proveedores.html', '/frontend/proveedor-pieza.html',
-        '/frontend/pieza-comprada.html', '/frontend/proveedores.css', '/frontend/crud.js',
-        '/assets/imagenes/proveedor.png']) {
+    for (const path of ['/frontend/', '/frontend/proveedores.html', '/frontend/piezas.html',
+        '/frontend/compras.html', '/frontend/proveedor-pieza.html', '/frontend/pieza-comprada.html',
+        '/frontend/piezas.js', '/frontend/compras.js', '/frontend/proveedores.css', '/frontend/crud.js',
+        '/assets/imagenes/proveedor.png', '/assets/imagenes/pieza.png', '/assets/imagenes/compras.png']) {
         const response = await fetch(base + path);
         assert.equal(response.status, 200, path);
     }
@@ -58,6 +59,89 @@ test('proveedores rechaza campos inválidos y comunica compras asociadas', async
         assert.equal((await request('/api/proveedores', 'POST', body)).status, 400, JSON.stringify(body));
     }
     assert.equal((await request('/api/proveedores/1', 'DELETE')).status, 409);
+});
+
+test('piezas: alta, consulta, actualización y eliminación con campos opcionales', async () => {
+    const created = await request('/api/piezas', 'POST', { nombre: '  Tuerca  ', color: ' ', material: ' Acero ' });
+    assert.equal(created.status, 201);
+    assert.equal(created.body.nombre, 'Tuerca');
+    assert.equal(created.body.color, null);
+    assert.equal(created.body.material, 'Acero');
+    const path = `/api/piezas/${created.body.idPieza}`;
+    assert.equal((await request(path)).body.nombre, 'Tuerca');
+    assert.ok((await request('/api/piezas')).body.some(row => row.idPieza === created.body.idPieza));
+    const updated = await request(path, 'PUT', { color: 'Rojo', material: '' });
+    assert.equal(updated.body.color, 'Rojo');
+    assert.equal(updated.body.material, null);
+    assert.equal((await request(path, 'DELETE')).status, 200);
+    assert.equal((await request(path)).status, 404);
+});
+
+test('piezas rechaza campos inválidos y comunica compras asociadas', async () => {
+    for (const body of [{}, { nombre: ' ' }, { nombre: 123 }, { nombre: 'x'.repeat(121) },
+        { nombre: 'Test', color: 'x'.repeat(51) }, { nombre: 'Test', material: 'x'.repeat(101) },
+        { nombre: 'Test', dimensiones: 'x'.repeat(121) }, { nombre: 'Test', categorias: 'x'.repeat(256) },
+        { nombre: 'Test', descripcion: 'x'.repeat(5001) }, { nombre: 'Test', color: 7 },
+        { nombre: 'Test', descripcion: {} }]) {
+        assert.equal((await request('/api/piezas', 'POST', body)).status, 400, JSON.stringify(body).slice(0, 80));
+    }
+    for (const body of [{ nombre: '' }, { nombre: 'x'.repeat(121) }, { color: 'x'.repeat(51) }, { material: [] }]) {
+        assert.equal((await request('/api/piezas/1', 'PUT', body)).status, 400, JSON.stringify(body).slice(0, 80));
+    }
+    for (const id of ['0', 'abc', '1.5']) {
+        assert.equal((await request(`/api/piezas/${id}`)).status, 400, id);
+    }
+    assert.equal((await request('/api/piezas/999')).status, 404);
+    const pieza = (await request('/api/piezas', 'POST', { nombre: 'Con compra' })).body;
+    assert.equal((await request('/api/pieza-comprada', 'POST', {
+        idCompra: 1, idPieza: pieza.idPieza, cantidad: 1, subTotal: '5.00'
+    })).status, 201);
+    assert.equal((await request(`/api/piezas/${pieza.idPieza}`, 'DELETE')).status, 409);
+    assert.equal((await request(`/api/pieza-comprada/1/${pieza.idPieza}`, 'DELETE')).status, 200);
+    assert.equal((await request(`/api/piezas/${pieza.idPieza}`, 'DELETE')).status, 200);
+});
+
+test('compras: alta, consulta, actualización y eliminación', async () => {
+    const valid = { idProveedor: 1, numFactura: '  FAC-100  ', fecha: '2026-11-03', total: '150.50' };
+    const created = await request('/api/compras', 'POST', valid);
+    assert.equal(created.status, 201);
+    assert.equal(created.body.numFactura, 'FAC-100');
+    assert.equal(created.body.total, '150.50');
+    const path = `/api/compras/${created.body.idCompra}`;
+    assert.equal((await request(path)).body.fecha, '2026-11-03');
+    assert.ok((await request('/api/compras')).body.some(row => row.idCompra === created.body.idCompra));
+    const updated = await request(path, 'PUT', { numFactura: ' FAC-200 ', total: 99.9 });
+    assert.equal(updated.status, 200);
+    assert.equal(updated.body.numFactura, 'FAC-200');
+    assert.equal(updated.body.total, '99.90');
+    assert.equal((await request(path, 'DELETE')).status, 200);
+    assert.equal((await request(path)).status, 404);
+});
+
+test('compras rechaza proveedor, factura, fecha e importe inválidos', async () => {
+    const valid = { idProveedor: 1, numFactura: 'FAC-100', fecha: '2026-11-03', total: '150.50' };
+    const invalidos = {
+        idProveedor: [0, 'abc', 1.5, null, undefined, 999],
+        numFactura: ['', ' ', 'x'.repeat(51), 123, null, undefined],
+        fecha: ['2026-02-30', '2026-13-01', '2026-11-03T10:00:00Z', '', 20261103, undefined],
+        total: ['', null, true, -1, 'abc', '10000000000', '1.999', undefined]
+    };
+    for (const [campo, valores] of Object.entries(invalidos)) {
+        for (const valor of valores) {
+            assert.equal((await request('/api/compras', 'POST', { ...valid, [campo]: valor })).status, 400,
+                `${campo}: ${JSON.stringify(valor)}`);
+        }
+    }
+    for (const body of [{ idProveedor: 999 }, { idProveedor: 0 }, { numFactura: ' ' }, { numFactura: 'x'.repeat(51) },
+        { fecha: '2026-02-30' }, { total: '' }, { total: -1 }, { total: '1.999' }]) {
+        assert.equal((await request('/api/compras/1', 'PUT', body)).status, 400, JSON.stringify(body));
+    }
+    for (const id of ['0', 'abc', '1.5']) {
+        assert.equal((await request(`/api/compras/${id}`)).status, 400, id);
+    }
+    assert.equal((await request('/api/compras/999')).status, 404);
+    assert.equal((await request('/api/compras/999', 'PUT', { total: '1.00' })).status, 404);
+    assert.equal((await request('/api/compras/999', 'DELETE')).status, 404);
 });
 
 for (const [endpoint, valid, change] of [

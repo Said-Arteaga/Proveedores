@@ -1,5 +1,7 @@
 import { Response } from "express";
 import { Proveedor } from "../entities/Proveedor";
+import { Pieza } from "../entities/Pieza";
+import { Compra } from "../entities/Compra";
 
 class ValidacionError extends Error {}
 
@@ -65,6 +67,44 @@ export function datosProveedor(datos: Record<string, unknown>, nuevo = false): P
         }
         resultado[campo] = Number(valor);
     }
+    return resultado;
+}
+
+export function datosPieza(datos: Record<string, unknown>, nuevo = false): Partial<Pieza> {
+    const resultado: Partial<Pieza> = {};
+    const limites = { nombre: 120, color: 50, material: 100, dimensiones: 120,
+        categorias: 255, descripcion: 5000 } as const;
+    if (nuevo && datos.nombre === undefined) throw new ValidacionError("El nombre es obligatorio");
+    for (const campo of Object.keys(limites) as (keyof typeof limites)[]) {
+        const valor = datos[campo];
+        if (valor === undefined) continue;
+        if (campo !== "nombre" && (valor === null || valor === "")) {
+            resultado[campo] = null;
+            continue;
+        }
+        if (typeof valor !== "string" || valor.trim().length > limites[campo] ||
+            (campo === "nombre" && !valor.trim())) {
+            throw new ValidacionError(`${campo}: introduce texto de hasta ${limites[campo]} caracteres${campo === "nombre" ? " (obligatorio)" : ""}`);
+        }
+        Object.assign(resultado, { [campo]: valor.trim() || null });
+    }
+    return resultado;
+}
+
+export function datosCompra(datos: Record<string, unknown>, nuevo = false): Partial<Compra> {
+    const resultado: Partial<Compra> = {};
+    if (nuevo || datos.idProveedor !== undefined) {
+        resultado.idProveedor = enteroPositivo(datos.idProveedor, "idProveedor");
+    }
+    if (nuevo || datos.numFactura !== undefined) {
+        const factura = datos.numFactura;
+        if (typeof factura !== "string" || !factura.trim() || factura.trim().length > 50) {
+            throw new ValidacionError("El número de factura es obligatorio y puede tener hasta 50 caracteres");
+        }
+        resultado.numFactura = factura.trim();
+    }
+    if (nuevo || datos.fecha !== undefined) resultado.fecha = fechaCalendario(datos.fecha);
+    if (nuevo || datos.total !== undefined) resultado.total = importe(datos.total, "El total");
     return resultado;
 }
 

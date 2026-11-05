@@ -35,14 +35,15 @@ h2 { font-size: 24px; margin: 0 0 12px; }
 fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .campo { margin-top: 18px; }
 label { display: block; font-size: 19px; text-align: left; }
-input, select {
+input, select, textarea {
     font: inherit; font-size: 17px; color: inherit; background: white;
     display: block; min-height: 50px; width: 100%; min-width: 0;
     margin-top: 6px; border-radius: 20px; padding: 10px 15px; border: 1px solid #9a83aa;
 }
+textarea { min-height: 110px; resize: vertical; }
 input::placeholder { color: #75657e; font-size: 15px; }
-input:hover, select:hover { border-color: var(--borde); }
-input:disabled, select:disabled { background: #f4eff7; color: #65536f; cursor: not-allowed; }
+input:hover, select:hover, textarea:hover { border-color: var(--borde); }
+input:disabled, select:disabled, textarea:disabled { background: #f4eff7; color: #65536f; cursor: not-allowed; }
 button {
     background: linear-gradient(135deg, #4a148c, #ab47bc);
     color: white; font: inherit; font-weight: 600; font-size: 17px;
@@ -66,6 +67,7 @@ button:disabled { opacity: .6; cursor: wait; }
 .tabla-contenedor { overflow-x: auto; border-radius: 12px; border: 1px solid #e4d8ef; }
 table { width: 100%; min-width: 600px; border-collapse: collapse; text-align: left; font-size: 15px; }
 .tabla-proveedores { min-width: 820px; }
+.tabla-piezas { min-width: 960px; }
 th { background: #f0e7f7; color: var(--morado); font-weight: 600; }
 th, td { padding: 14px 12px; border-bottom: 1px solid #e4d8ef; vertical-align: top; }
 td { max-width: 260px; overflow-wrap: anywhere; }

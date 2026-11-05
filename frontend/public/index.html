@@ -3,53 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="proveedores.css">
     <link rel="stylesheet" href="index.css">
-    <title>Página de Inicio</title>
+    <title>Inicio | Sistema de Proveedores</title>
 </head>
-<body>
-    <div id="portada">
+<body class="inicio">
+    <header id="portada">
         <div class="header">
-            <div>
-                <div id="icono">
-                    <img id="icono_proveedor" src="/assets/imagenes/proveedor.png">
-                </div>
-            </div>
-            <h1>SISTEMA DE PROVEEDORES</h1>
+            <div id="icono"><img id="icono_proveedor" src="/assets/imagenes/proveedor.png" alt=""></div>
+            <div><h1>SISTEMA DE PROVEEDORES</h1><p>CREA · ACTUALIZA · BUSCA · ELIMINA</p></div>
         </div>
-    </div>
-    <div class="texto">
-            <h1>¿QUÉ DESEA HACER?</h1>
-            <div id="botones">
-                <div class="fila">
-                    <button class="button" onclick="window.location.href='/frontend/proveedores.html'">PROVEEDORES
-                        <img src="/assets/imagenes/proveedor_icono.png">
-                    </button>
-                    <button class="button">PIEZAS
-                        <img src="/assets/imagenes/pieza.png">
-                    </button>
-                    <button class="button">COMPRAS
-                        <img src="/assets/imagenes/compras.png">
-                    </button>
-                </div>
-                <div class="fila">
-                    <button class="button" onclick="window.location.href='/frontend/proveedor-pieza.html'">PROVEEDOR - PIEZA
-                        <img src="/assets/imagenes/envio.png">
-                    </button>
-                <button class="button" onclick="window.location.href='/frontend/pieza-comprada.html'">COMPRAS -PIEZAS
-                        <img src="/assets/imagenes/compra.png">
-                </button>
-                </div>
-                
+    </header>
+    <main class="inicio-contenido">
+        <h2 class="pregunta">¿QUÉ DESEA HACER?</h2>
+        <section class="grupo" aria-labelledby="grupo-catalogos">
+            <h3 id="grupo-catalogos">Catálogos</h3>
+            <div class="tarjetas">
+                <a class="tarjeta" href="proveedores.html">
+                    <span class="insignia"><img src="/assets/imagenes/proveedor_icono.png" alt=""></span>
+                    <span>PROVEEDORES</span>
+                </a>
+                <a class="tarjeta" href="piezas.html">
+                    <span class="insignia"><img src="/assets/imagenes/pieza.png" alt=""></span>
+                    <span>PIEZAS</span>
+                </a>
+                <a class="tarjeta" href="compras.html">
+                    <span class="insignia"><img src="/assets/imagenes/compras.png" alt=""></span>
+                    <span>COMPRAS</span>
+                </a>
             </div>
-            
-    </div>
-    <div>
-        <div id="colaboradores">
-                <div class="colaborador"><IMG src="/assets/imagenes/perfil1.png"> Escudero Arteaga Said Alejandro</div>
-                <div class="colaborador"><IMG src="/assets/imagenes/perfil1.png"> Hernández Franco Brandom Galder</div>
-                <div class="colaborador"><IMG src="/assets/imagenes/perfil2.png"> Jiménez Cubas Ericka</div>    
-                <div class="colaborador"><IMG src="/assets/imagenes/perfil1.png"> Lara Vidal Adrián Daniel</div>
-        </div>
-    </div>
+        </section>
+        <section class="grupo" aria-labelledby="grupo-relaciones">
+            <h3 id="grupo-relaciones">Relaciones</h3>
+            <div class="tarjetas">
+                <a class="tarjeta" href="proveedor-pieza.html">
+                    <span class="insignia"><img src="/assets/imagenes/envio.png" alt=""></span>
+                    <span>PROVEEDOR - PIEZA</span>
+                </a>
+                <a class="tarjeta" href="pieza-comprada.html">
+                    <span class="insignia"><img src="/assets/imagenes/compra.png" alt=""></span>
+                    <span>COMPRAS - PIEZAS</span>
+                </a>
+            </div>
+        </section>
+    </main>
+    <footer class="colaboradores" aria-labelledby="titulo-colaboradores">
+        <h2 id="titulo-colaboradores">Colaboradores</h2>
+        <ul>
+            <li><span class="avatar perfil1" aria-hidden="true"></span>Escudero Arteaga Said Alejandro</li>
+            <li><span class="avatar perfil1" aria-hidden="true"></span>Hernández Franco Brandom Galder</li>
+            <li><span class="avatar perfil2" aria-hidden="true"></span>Jiménez Cubas Ericka</li>
+            <li><span class="avatar perfil1" aria-hidden="true"></span>Lara Vidal Adrián Daniel</li>
+        </ul>
+    </footer>
 </body>
 </html>

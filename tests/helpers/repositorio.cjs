@@ -9,6 +9,9 @@ function repository(entity) {
     const rows = tables.get(name);
     const matches = (row, where) => Object.entries(where).every(([key, value]) => row[key] === value);
     const checkReferences = (row) => {
+        if (name === 'Compra' && !tables.get('Proveedor')?.some(item => item.idProveedor === row.idProveedor)) {
+            throw { code: 'ER_NO_REFERENCED_ROW_2' };
+        }
         if (name === 'ProveedorPieza' || name === 'PiezaComprada') {
             const foreign = name === 'ProveedorPieza' ? ['Proveedor', 'idProveedor'] : ['Compra', 'idCompra'];
             if (!tables.get(foreign[0])?.some(item => item[foreign[1]] === row[foreign[1]]) ||
@@ -35,13 +38,19 @@ function repository(entity) {
             const index = rows.findIndex(row => keys[name].every(key => row[key] === data[key]));
             if (index >= 0) rows[index] = structuredClone(data);
             else {
-                if (name === 'Proveedor') data.idProveedor = Math.max(0, ...rows.map(row => row.idProveedor)) + 1;
+                if (keys[name].length === 1) {
+                    const [key] = keys[name];
+                    data[key] = Math.max(0, ...rows.map(row => row[key])) + 1;
+                }
                 rows.push(structuredClone(data));
             }
             return structuredClone(data);
         },
         remove: async data => {
             if (name === 'Proveedor' && tables.get('Compra')?.some(row => row.idProveedor === data.idProveedor)) {
+                throw { code: 'ER_ROW_IS_REFERENCED_2' };
+            }
+            if (name === 'Pieza' && tables.get('PiezaComprada')?.some(row => row.idPieza === data.idPieza)) {
                 throw { code: 'ER_ROW_IS_REFERENCED_2' };
             }
             const index = rows.findIndex(row => keys[name].every(key => row[key] === data[key]));

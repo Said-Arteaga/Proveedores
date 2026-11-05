@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="proveedores.css">
+    <title>Piezas | Sistema de Proveedores</title>
+</head>
+<body>
+    <header id="portada">
+        <div class="header">
+            <div id="icono"><img id="icono_proveedor" src="/assets/imagenes/pieza.png" alt=""></div>
+            <div><h1>PIEZAS</h1><p>CREA · ACTUALIZA · BUSCA · ELIMINA</p></div>
+        </div>
+    </header>
+    <nav class="navegacion" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="proveedores.html">Proveedores</a>
+        <a href="piezas.html" aria-current="page">Piezas</a>
+        <a href="compras.html">Compras</a>
+        <a href="proveedor-pieza.html">Proveedor - Pieza</a>
+        <a href="pieza-comprada.html">Pieza Comprada</a>
+    </nav>
+    <main class="contenido">
+        <section class="campos" aria-labelledby="titulo-formulario">
+            <h2 id="titulo-formulario">Agregar pieza</h2>
+            <p class="ayuda">Los campos con * son obligatorios.</p>
+            <form id="form-pieza" class="crud-form" action="/api/piezas" method="POST">
+                <fieldset>
+                    <legend class="solo-lectores">Datos de pieza</legend>
+                <div class="campo"><label for="nombre">Nombre de la pieza *</label><input type="text" id="nombre" name="nombre" maxlength="120" autocomplete="off" required></div>
+                <div class="campo"><label for="color">Color</label><input type="text" id="color" name="color" maxlength="50" autocomplete="off"></div>
+                <div class="campo"><label for="material">Material</label><input type="text" id="material" name="material" maxlength="100" autocomplete="off"></div>
+                <div class="campo"><label for="dimensiones">Dimensiones</label><input type="text" id="dimensiones" name="dimensiones" maxlength="120" autocomplete="off"></div>
+                <div class="campo"><label for="categorias">Categorías</label><input type="text" id="categorias" name="categorias" maxlength="255" autocomplete="off" placeholder="Ej. Tornillería, Herrajes"></div>
+                <div class="campo"><label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion" rows="4" maxlength="5000" autocomplete="off"></textarea></div>
+                </fieldset>
+                <p id="catalogo-mensaje" class="aviso" role="status" aria-live="polite"></p>
+                <div class="acciones-formulario">
+                    <button id="guardar" type="submit" disabled><span id="guardar-texto">Agregar</span> <img id="avanzar" src="/assets/imagenes/avanzar.png" alt=""></button>
+                    <button id="cancelar" class="secundario" type="button" hidden>Cancelar edición</button>
+                </div>
+                <p id="mensaje-formulario" class="aviso" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section class="registros" aria-labelledby="titulo-registros">
+            <div class="cabecera-lista"><h2 id="titulo-registros">Registros</h2><button id="recargar" class="secundario" type="button">Actualizar lista</button></div>
+            <label for="buscar">Buscar</label>
+            <input id="buscar" type="search" placeholder="Nombre, color, material, categoría o descripción" autocomplete="off" aria-controls="lista-registros">
+            <p id="contador" class="ayuda" role="status" aria-live="polite"></p>
+            <p id="estado-lista" class="aviso" role="status" aria-live="polite">Cargando registros…</p>
+            <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla de registros">
+                <table class="tabla-piezas">
+                    <caption class="solo-lectores">Listado de piezas</caption>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Nombre</th><th scope="col">Color</th><th scope="col">Material</th><th scope="col">Dimensiones</th><th scope="col">Categorías</th><th scope="col">Descripción</th><th scope="col">Acciones</th></tr></thead>
+                    <tbody id="lista-registros"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <noscript><p class="aviso error">Activa JavaScript para consultar y guardar registros.</p></noscript>
+    <script type="module" src="piezas.js"></script>
+</body>
+</html>
