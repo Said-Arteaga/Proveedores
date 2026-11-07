@@ -4,11 +4,13 @@ import {
     PrimaryColumn,
     Column,
     ManyToOne,
+    OneToMany,
     JoinColumn
 } from "typeorm";
 
 import { Proveedor } from "./Proveedor";
 import { Pieza } from "./Pieza";
+import { PiezaComprada } from "./PiezaComprada";
 
 @Entity({ name: "proveedorpieza" })
 export class ProveedorPieza {
@@ -37,4 +39,7 @@ export class ProveedorPieza {
     })
     @JoinColumn({ name: "IdPieza", referencedColumnName: "idPieza" })
     pieza!: Pieza;
+
+    @OneToMany(() => PiezaComprada, (piezaComprada) => piezaComprada.proveedorPieza)
+    piezasCompradas!: PiezaComprada[];
 }

@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 
 import { Compra } from "./Compra";
-import { Pieza } from "./Pieza";
+import { ProveedorPieza } from "./ProveedorPieza";
 
 @Entity({ name: "piezacomprada" })
 export class PiezaComprada {
@@ -17,6 +17,9 @@ export class PiezaComprada {
 
     @PrimaryColumn({ name: "IdPieza", type: "int" })
     idPieza!: number;
+
+    @Column({ name: "IdProveedor", type: "int" })
+    idProveedor!: number;
 
     @Column({ name: "Cantidad", type: "int" })
     cantidad!: number;
@@ -31,10 +34,17 @@ export class PiezaComprada {
     @JoinColumn({ name: "IdCompra", referencedColumnName: "idCompra" })
     compra!: Compra;
 
-    @ManyToOne(() => Pieza, (pieza) => pieza.compras, {
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE"
-    })
-    @JoinColumn({ name: "IdPieza", referencedColumnName: "idPieza" })
-    pieza!: Pieza;
+    @ManyToOne(
+        () => ProveedorPieza,
+        (proveedorPieza) => proveedorPieza.piezasCompradas,
+        {
+            onDelete: "RESTRICT",
+            onUpdate: "CASCADE"
+        }
+    )
+    @JoinColumn([
+        { name: "IdProveedor", referencedColumnName: "idProveedor" },
+        { name: "IdPieza", referencedColumnName: "idPieza" }
+    ])
+    proveedorPieza!: ProveedorPieza;
 }

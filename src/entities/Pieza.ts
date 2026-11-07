@@ -7,7 +7,6 @@ import {
 } from "typeorm";
 
 import { ProveedorPieza } from "./ProveedorPieza";
-import { PiezaComprada } from "./PiezaComprada";
 
 @Entity({ name: "pieza" })
 export class Pieza {
@@ -34,7 +33,4 @@ export class Pieza {
 
     @OneToMany(() => ProveedorPieza, (proveedorPieza) => proveedorPieza.pieza)
     proveedores!: ProveedorPieza[];
-
-    @OneToMany(() => PiezaComprada, (piezaComprada) => piezaComprada.pieza)
-    compras!: PiezaComprada[];
 }

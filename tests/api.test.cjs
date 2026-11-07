@@ -10,8 +10,9 @@ let server, base;
 
 before(async () => {
     tables.set('Proveedor', [{ idProveedor: 1, nombre: 'Proveedor existente' }]);
-    tables.set('Pieza', [{ idPieza: 1, nombre: 'Tornillo' }]);
+    tables.set('Pieza', [{ idPieza: 1, nombre: 'Tornillo' }, { idPieza: 2, nombre: 'Tuerca' }]);
     tables.set('Compra', [{ idCompra: 1, idProveedor: 1, numFactura: 'FAC-001' }]);
+    tables.set('ProveedorPieza', [{ idProveedor: 1, idPieza: 1, precio: '5.00', fecha: '2026-11-03' }]);
     AppDataSource.getRepository = repository;
     server = app.listen(0, '127.0.0.1');
     await once(server, 'listening');
@@ -93,6 +94,9 @@ test('piezas rechaza campos inválidos y comunica compras asociadas', async () =
     }
     assert.equal((await request('/api/piezas/999')).status, 404);
     const pieza = (await request('/api/piezas', 'POST', { nombre: 'Con compra' })).body;
+    assert.equal((await request('/api/proveedor-pieza', 'POST', {
+        idProveedor: 1, idPieza: pieza.idPieza, precio: '5.00', fecha: '2026-11-03'
+    })).status, 201);
     assert.equal((await request('/api/pieza-comprada', 'POST', {
         idCompra: 1, idPieza: pieza.idPieza, cantidad: 1, subTotal: '5.00'
     })).status, 201);
@@ -145,17 +149,20 @@ test('compras rechaza proveedor, factura, fecha e importe inválidos', async () 
 });
 
 for (const [endpoint, valid, change] of [
-    ['/api/proveedor-pieza', { idProveedor: 1, idPieza: 1, precio: '15.50', fecha: '2026-11-03' }, { precio: '18.00' }],
+    ['/api/proveedor-pieza', { idProveedor: 1, idPieza: 2, precio: '15.50', fecha: '2026-11-03' }, { precio: '18.00' }],
     ['/api/pieza-comprada', { idCompra: 1, idPieza: 1, cantidad: 2, subTotal: '31.00' }, { cantidad: 3, subTotal: '46.50' }]
 ]) {
     test(`${endpoint}: CRUD con clave compuesta y rechazo de duplicados`, async () => {
-        const path = `${endpoint}/1/1`;
-        assert.equal((await request(endpoint, 'POST', valid)).status, 201);
+        const path = `${endpoint}/1/${valid.idPieza}`;
+        const totalAnterior = (await request(endpoint)).body.length;
+        const created = await request(endpoint, 'POST', valid);
+        assert.equal(created.status, 201);
+        if (endpoint === '/api/pieza-comprada') assert.equal(created.body.idProveedor, 1);
         const duplicate = await request(endpoint, 'POST', { ...valid, ...change });
         assert.equal(duplicate.status, 409);
         const row = (await request(path)).body;
         for (const key of Object.keys(change)) assert.equal(row[key], valid[key]);
-        assert.equal((await request(endpoint)).body.length, 1);
+        assert.equal((await request(endpoint)).body.length, totalAnterior + 1);
         assert.equal((await request(path, 'PUT', change)).status, 200);
         assert.equal((await request(path)).body[Object.keys(change)[0]], Object.values(change)[0]);
         assert.equal((await request(path, 'DELETE')).status, 200);
@@ -163,7 +170,8 @@ for (const [endpoint, valid, change] of [
     });
     test(`${endpoint}: rechaza claves inválidas y referencias inexistentes`, async () => {
         assert.equal((await request(`${endpoint}/0/1`)).status, 400);
-        assert.equal((await request(endpoint, 'POST', { ...valid, idPieza: 999 })).status, 400);
+        const response = await request(endpoint, 'POST', { ...valid, idPieza: 999 });
+        assert.equal(response.status, endpoint === '/api/pieza-comprada' ? 404 : 400);
     });
 }
 
